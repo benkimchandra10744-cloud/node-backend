@@ -48,6 +48,23 @@ required: true
 )
 );
 
+app.get("/", (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>My Backend API</title>
+      </head>
+      <body>
+        <h1>Welcome to My Backend API!</h1>
+        <p>Your Node.js server is running successfully.</p>
+      </body>
+    </html>
+  `);
+});
+
 // 1. Health-check endpoint
 app.get("/health", (_req, res) => {
 res.json({
