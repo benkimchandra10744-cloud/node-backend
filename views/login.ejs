@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign in · Stillroom</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body class="auth-page">
+    <main class="auth-layout">
+      <a class="brand" href="/login" aria-label="Stillroom home">
+        <span class="brand-mark">S</span>
+        <span>stillroom</span>
+      </a>
+      <section class="auth-card">
+        <div class="eyebrow">YOUR PRIVATE IMAGE SPACE</div>
+        <h1>Welcome back</h1>
+        <p class="muted">Sign in to pick up where you left off.</p>
+        <% if (error) { %>
+          <div class="form-error" role="alert"><%= error %></div>
+        <% } %>
+        <form action="/login" method="post" class="form-stack">
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email" autocomplete="email" value="<%= email %>" placeholder="you@example.com" required>
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Your password" required>
+          <button class="button button-primary button-wide" type="submit">Sign in <span aria-hidden="true">→</span></button>
+        </form>
+        <p class="auth-switch">New to Stillroom? <a href="/signup">Create an account</a></p>
+      </section>
+      <p class="auth-note">A calm place for the images you want to keep.</p>
+    </main>
+  </body>
+</html>

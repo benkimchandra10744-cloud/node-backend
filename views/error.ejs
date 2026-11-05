@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%= title %> · Stillroom</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body class="auth-page">
+    <main class="auth-layout">
+      <a class="brand" href="/login">
+        <span class="brand-mark">S</span>
+        <span>stillroom</span>
+      </a>
+      <section class="auth-card error-card">
+        <div class="eyebrow">A LITTLE PAUSE</div>
+        <h1><%= title %></h1>
+        <p class="muted"><%= message %></p>
+        <a class="button button-primary button-wide button-link" href="/dashboard">Back to your library</a>
+      </section>
+      <p class="auth-note">A calm place for the images you want to keep.</p>
+    </main>
+  </body>
+</html>

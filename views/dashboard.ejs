@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Your library · Stillroom</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body class="dashboard-page">
+    <header class="topbar">
+      <a class="brand" href="/dashboard">
+        <span class="brand-mark">S</span>
+        <span>stillroom</span>
+      </a>
+      <div class="topbar-right">
+        <span class="user-greeting">Hello, <strong><%= user.name %></strong></span>
+        <form action="/logout" method="post">
+          <button class="button button-quiet" type="submit">Sign out</button>
+        </form>
+      </div>
+    </header>
+    <main class="dashboard-main">
+      <section class="welcome-row">
+        <div>
+          <div class="eyebrow">YOUR PERSONAL LIBRARY</div>
+          <h1>A place for your images.</h1>
+          <p class="muted">Upload a favorite and it will be waiting here whenever you need it.</p>
+        </div>
+        <div class="image-count"><span><%= images.length %></span> <%= images.length === 1 ? "image" : "images" %></div>
+      </section>
+
+      <section class="upload-panel" aria-labelledby="upload-title">
+        <div class="upload-copy">
+          <div class="upload-icon" aria-hidden="true">↑</div>
+          <div>
+            <h2 id="upload-title">Add to your library</h2>
+            <p class="muted">JPEG, PNG, WebP, or GIF · up to 5 MB</p>
+          </div>
+        </div>
+        <form action="/dashboard/images" method="post" enctype="multipart/form-data" class="upload-form">
+          <label class="file-input-label" for="image">Choose an image</label>
+          <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif" required>
+          <button class="button button-primary" type="submit">Upload image <span aria-hidden="true">↗</span></button>
+        </form>
+        <% if (error) { %>
+          <div class="form-error upload-error" role="alert"><%= error %></div>
+        <% } %>
+      </section>
+
+      <section class="library-section">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">COLLECTION</div>
+            <h2>Your library</h2>
+          </div>
+          <% if (images.length) { %><span class="muted"><%= images.length %> saved</span><% } %>
+        </div>
+        <% if (images.length) { %>
+          <div class="image-grid">
+            <% images.forEach((image) => { %>
+              <article class="image-card">
+                <a class="image-preview" href="<%= image.previewUrl %>" target="_blank" rel="noreferrer" aria-label="Open <%= image.filename %>">
+                  <img src="<%= image.previewUrl %>" alt="<%= image.filename %>" loading="lazy">
+                </a>
+                <div class="image-meta">
+                  <div class="image-name" title="<%= image.filename %>"><%= image.filename %></div>
+                  <div class="image-date"><%= new Date(image.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) %></div>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="empty-state">
+            <div class="empty-art" aria-hidden="true"><span>✳</span></div>
+            <h3>Your library starts here</h3>
+            <p class="muted">Once you upload an image, you'll find it right here.</p>
+          </div>
+        <% } %>
+      </section>
+    </main>
+    <footer class="footer">Your space, just the way you left it.</footer>
+  </body>
+</html>
