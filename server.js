@@ -8,9 +8,15 @@ import "dotenv/config";
 import apiRoutes from "./routes/apiRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import { apiLimiter, connectRateLimitStore } from "./middleware/rateLimiters.js";
 
 const app = express();
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
+const trustProxyHops = Number(process.env.TRUST_PROXY || 0);
+
+if (!Number.isSafeInteger(trustProxyHops) || trustProxyHops < 0) {
+  throw new Error("TRUST_PROXY must be a non-negative integer.");
+}
 
 const secret = process.env.JWT_SECRET;
 if (!secret || secret.length < 32) {
@@ -19,6 +25,7 @@ if (!secret || secret.length < 32) {
 
 app.set("view engine", "ejs");
 app.set("views", path.join(currentDirectory, "views"));
+app.set("trust proxy", trustProxyHops);
 app.use(
   helmet({
     strictTransportSecurity:
@@ -40,7 +47,7 @@ app.get("/", (_req, res) => res.redirect("/login"));
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
 app.use(authRoutes);
 app.use(dashboardRoutes);
-app.use("/api", apiRoutes);
+app.use("/api", apiLimiter, apiRoutes);
 
 app.use((req, res) => {
   if (req.path.startsWith("/api/")) {
@@ -89,15 +96,23 @@ async function start() {
 
   await mongoose.connect(process.env.MONGODB_URI);
   console.log("DATABASE IS CONNECTED");
-  app.listen(port, "0.0.0.0", () => {
+  await connectRateLimitStore();
+  const server = app.listen(port, "0.0.0.0", () => {
     console.log(`API listening on ${port}`);
+    process.send?.("ready");
+  });
+  server.on("error", (error) => {
+    console.error("HTTP server failed to start:", error.message);
+    process.exit(1);
   });
 }
 
-if (
-  process.argv[1] &&
-  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
-) {
+const isEntryPoint =
+  import.meta.main ??
+  (process.argv[1] &&
+    path.resolve(process.argv[1]) === fileURLToPath(import.meta.url));
+
+if (isEntryPoint) {
   start().catch((error) => {
     console.error("Application startup failed:", error.message);
     process.exit(1);

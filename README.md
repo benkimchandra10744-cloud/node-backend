@@ -16,6 +16,26 @@ A server-rendered image library with email/password signup, login, and private S
 
 Open `http://localhost:3000`. Images must be JPEG, PNG, WebP, or GIF and no larger than 5 MB.
 
+## Rate limiting and load balancing
+
+- Login: 5 attempts per IP per 15 minutes.
+- Signup: 5 attempts per IP per hour.
+- Image uploads: 20 attempts per IP per hour.
+- API: 100 requests per IP per 15 minutes, plus the login/signup-specific limits.
+- `TRUST_PROXY` defaults to `0`. Set it to the number of trusted reverse proxies in front of Express (for example `1` for one Nginx or load-balancer hop). Do not trust proxies that clients can bypass.
+- PM2 runs two Node.js workers in cluster mode and balances requests across them. Adjust `instances` in `ecosystem.config.cjs` to fit the server's CPU and memory.
+- Set `REDIS_URL` to share rate-limit counters across all workers and future app servers. Without Redis, counters are in-memory per worker and the effective per-IP limit can be multiplied by the number of workers. Redis connection failures prevent the app from starting when `REDIS_URL` is set.
+
+On a server, install dependencies and apply the PM2 config with:
+
+```sh
+npm ci
+pm2 startOrRestart ecosystem.config.cjs --update-env
+pm2 save
+```
+
+For a single-process local run, use `npm start`; `npm run dev` restarts on source changes.
+
 ## Structure
 
 - `models/`: MongoDB user and image metadata schemas.

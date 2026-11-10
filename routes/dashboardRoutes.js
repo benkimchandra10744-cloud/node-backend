@@ -2,6 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import { dashboard, uploadImage } from "../controllers/dashboardController.js";
 import { requireAuth } from "../middleware/auth.js";
+import { uploadLimiter } from "../middleware/rateLimiters.js";
 
 const router = Router();
 const upload = multer({
@@ -13,6 +14,7 @@ router.get("/dashboard", requireAuth, dashboard);
 router.post(
   "/dashboard/images",
   requireAuth,
+  uploadLimiter,
   upload.single("image"),
   uploadImage
 );

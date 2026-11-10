@@ -4,10 +4,15 @@ module.exports = {
     {
       name: "node-backend",
       script: "./server.js",
+      exec_mode: "cluster",
+      instances: 2,
       watch: false,
       autorestart: true,
+      wait_ready: true,
+      listen_timeout: 10000,
+      kill_timeout: 5000,
       env: {
-        NODE_ENV: "development"
+        NODE_ENV: "production"
       }
     }
   ]
