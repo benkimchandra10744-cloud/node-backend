@@ -3,7 +3,7 @@ module.exports = {
   apps: [
     {
       name: "node-backend",
-      script: "./server.js",
+      script: "./index.js",
       exec_mode: "cluster",
       instances: 2,
       watch: false,

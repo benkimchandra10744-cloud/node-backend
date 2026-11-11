@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon --watch .env --watch server.js --watch controllers --watch middleware --watch models --watch routes --watch services --watch views --watch public --ext js,mjs,json,ejs,css,env --exec node server.js",
+    "start": "node index.js",
+    "dev": "nodemon --watch .env --watch index.js --watch server.js --watch controllers --watch middleware --watch models --watch routes --watch services --watch views --watch public --ext js,mjs,json,ejs,css,env --exec node index.js",
     "test": "node --test"
   },
   "keywords": [],

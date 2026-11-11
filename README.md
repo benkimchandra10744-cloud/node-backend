@@ -26,6 +26,8 @@ Open `http://localhost:3000`. Images must be JPEG, PNG, WebP, or GIF and no larg
 - PM2 runs two Node.js workers in cluster mode and balances requests across them. Adjust `instances` in `ecosystem.config.cjs` to fit the server's CPU and memory.
 - Set `REDIS_URL` to share rate-limit counters across all workers and future app servers. Without Redis, counters are in-memory per worker and the effective per-IP limit can be multiplied by the number of workers. Redis connection failures prevent the app from starting when `REDIS_URL` is set.
 
+The app starts through `index.js`, which waits for the database and HTTP listener before reporting readiness to PM2, and gracefully closes MongoDB and Redis on shutdown.
+
 On a server, install dependencies and apply the PM2 config with:
 
 ```sh

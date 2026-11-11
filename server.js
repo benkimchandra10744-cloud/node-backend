@@ -8,7 +8,11 @@ import "dotenv/config";
 import apiRoutes from "./routes/apiRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
-import { apiLimiter, connectRateLimitStore } from "./middleware/rateLimiters.js";
+import {
+  apiLimiter,
+  closeRateLimitStore,
+  connectRateLimitStore
+} from "./middleware/rateLimiters.js";
 
 const app = express();
 const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
@@ -89,7 +93,7 @@ app.use((error, req, res, _next) => {
 
 const port = Number(process.env.PORT || 3000);
 
-async function start() {
+export async function start() {
   if (!process.env.MONGODB_URI) {
     throw new Error("MONGODB_URI is missing.");
   }
@@ -97,14 +101,23 @@ async function start() {
   await mongoose.connect(process.env.MONGODB_URI);
   console.log("DATABASE IS CONNECTED");
   await connectRateLimitStore();
-  const server = app.listen(port, "0.0.0.0", () => {
-    console.log(`API listening on ${port}`);
-    process.send?.("ready");
+
+  const server = app.listen(port, "0.0.0.0");
+  await new Promise((resolve, reject) => {
+    server.once("listening", resolve);
+    server.once("error", reject);
   });
-  server.on("error", (error) => {
-    console.error("HTTP server failed to start:", error.message);
-    process.exit(1);
+  console.log(`API listening on ${port}`);
+  process.send?.("ready");
+  return server;
+}
+
+export async function stop(server) {
+  await new Promise((resolve, reject) => {
+    server.close((error) => (error ? reject(error) : resolve()));
   });
+  await mongoose.disconnect();
+  await closeRateLimitStore();
 }
 
 const isEntryPoint =
