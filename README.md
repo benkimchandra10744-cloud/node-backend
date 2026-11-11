@@ -48,3 +48,5 @@ For a single-process local run, use `npm start`; `npm run dev` restarts on sourc
 - `views/` and `public/`: EJS pages and responsive styles.
 
 Existing API endpoints remain available at `POST /api/auth/signup`, `POST /api/auth/login`, and authenticated `GET /api/dashboard`.
+
+Deployment workflow verified: Mac to GitHub to EC2.
